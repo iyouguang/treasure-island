@@ -3,6 +3,10 @@ import os
 from flask import Flask
 from flaskr.config import cfg
 
+from flask_socketio import SocketIO
+
+async_mode = None
+socketio = SocketIO()
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
@@ -34,6 +38,8 @@ def create_app(test_config=None):
     # register the database commands
     from flaskr import db
     db.init_app(app)
+
+    socketio.init_app(app=app, async_mode=async_mode)
 
     # apply the blueprints to the app
     from flaskr import auth, island

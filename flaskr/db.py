@@ -45,3 +45,11 @@ def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
+
+
+def get_history():
+    """
+    history: a python list, each item is a tuple of (datetime date, score, list of user_ids of other players)
+    """
+    return g.user['history']
+        

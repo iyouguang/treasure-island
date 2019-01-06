@@ -7,6 +7,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
 
+from flaskr import socketio
+from flask_socketio import send, emit
+
 import uuid
 
 
@@ -119,3 +122,15 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for('index'))
+
+@socketio.on('message')
+def handle_message(msg):
+    print('received message: ' + message)
+
+@socketio.on('json')
+def handle_json(json):
+    print('received json: ' + str(json))
+
+@socketio.on('my event')
+def handle_my_custom_event(json):
+    print('received json: ' + str(json))
