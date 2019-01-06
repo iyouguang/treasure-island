@@ -4,9 +4,13 @@ from flask import Flask
 from flaskr.config import cfg
 
 from flask_socketio import SocketIO
+from threading import Lock
 
 async_mode = None
 socketio = SocketIO()
+thread = None
+thread_lock = Lock()
+all_rooms = {}
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""

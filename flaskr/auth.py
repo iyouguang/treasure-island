@@ -37,11 +37,8 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().user_info.find_one({'user_id': user_id})
-        # g.user = get_db().execute(
-        #     'SELECT * FROM user WHERE id = ?', (user_id,)
-        # ).fetchone()
-
+        g.user = get_db().user_info.find_one({'user_id': user_id}, {'_id': 0})
+        session.user = g.user
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -70,7 +67,7 @@ def register():
         if error is None:
             # the name is available, store it in the database and go to
             # the login page
-            user_id = uuid.uuid1()
+            user_id = str(uuid.uuid1())
             db.user_info.insert_one({
                 'username': username, 
                 'password': generate_password_hash(password),
@@ -96,7 +93,7 @@ def login():
         password = request.form['password']
         db = get_db()
         error = None
-        user = db.user_info.find_one({'username': username})
+        user = get_db().user_info.find_one({'username': username}, {'_id': 0})
         # user = db.execute(
         #     'SELECT * FROM user WHERE username = ?', (username,)
         # ).fetchone()
@@ -123,14 +120,7 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-@socketio.on('message')
-def handle_message(msg):
-    print('received message: ' + message)
-
-@socketio.on('json')
-def handle_json(json):
-    print('received json: ' + str(json))
-
-@socketio.on('my event')
-def handle_my_custom_event(json):
-    print('received json: ' + str(json))
+@socketio.on('my_event')
+def handle_my_event(json):
+    print('received json: ' + json['data'])
+    emit('server_response', 'server responded!')
